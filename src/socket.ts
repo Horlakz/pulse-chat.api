@@ -31,9 +31,19 @@ export function initSockets(server: HttpServer, path: string = "/ws") {
 
   io.on("connection", (socket: Socket) => {
     const chatService = new ChatService(db);
+    const user = (socket as any).user;
+    if (!user) throw new Error("Unauthorized");
+
+    chatService.updateUserPresence((socket as any).user.sub, "online");
+    chatService.deliverAllUnacknowledgedMessages((socket as any).user.sub);
 
     console.log("Socket connected:", socket.id);
     new ChatSocketController(io, socket, chatService);
+
+    socket.on("disconnect", () => {
+      chatService.updateUserPresence((socket as any).user.sub, "offline");
+      console.log("Socket disconnected:", socket.id);
+    });
   });
 
   return io;
