@@ -43,5 +43,8 @@
   },
   "_moduleAliases": {
     "@": "src"
+  },
+  "prisma": {
+    "schema": "prisma"
   }
 }
