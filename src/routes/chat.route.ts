@@ -1,4 +1,10 @@
 import { PrismaService } from "@/config/prisma";
+import { validateDto } from "@/middleware/validator-dto";
+import {
+  ChatParamDto,
+  MessageCreateDto,
+  RoomCreateDto,
+} from "@/modules/chat/chat.dto";
 import { ChatController } from "@/modules/chat/controllers/chat.controller";
 import { RoomController } from "@/modules/chat/controllers/room.controller";
 import { ChatService } from "@/modules/chat/services/chat.service";
@@ -14,15 +20,41 @@ export default function initChatRouter(db: PrismaService) {
 
   const chatRouter = Router();
 
-  chatRouter.post("/rooms", roomController.createRoom);
-  chatRouter.get("/rooms/my", roomController.myRooms);
+  chatRouter.post(
+    "/rooms",
+    validateDto(RoomCreateDto),
+    roomController.createRoom
+  );
+  chatRouter.get("/rooms", roomController.myRooms);
   chatRouter.get("/rooms/public", roomController.listPublicRooms);
-  chatRouter.get("/rooms/:roomId/members", roomController.listRoomMembers);
-  chatRouter.post("/rooms/:roomId/join", roomController.joinRoom);
-  chatRouter.post("/rooms/:roomId/leave", roomController.leaveRoom);
+  chatRouter.get(
+    "/rooms/:roomId/members",
+    validateDto(ChatParamDto, "params"),
+    roomController.listRoomMembers
+  );
+  chatRouter.post(
+    "/rooms/:roomId/join",
+    validateDto(ChatParamDto, "params"),
+    roomController.joinRoom
+  );
+  chatRouter.post(
+    "/rooms/:roomId/leave",
+    validateDto(ChatParamDto, "params"),
+    roomController.leaveRoom
+  );
 
-  chatRouter.post("/:roomId/messages", chatController.sendMessage);
-  chatRouter.get("/:roomId/messages", chatController.listMessages);
+  chatRouter.post(
+    "/:roomId/messages",
+    validateDto(ChatParamDto, "params"),
+    validateDto(MessageCreateDto),
+    chatController.sendMessage
+  );
+  chatRouter.get(
+    "/:roomId/messages",
+    validateDto(ChatParamDto, "params"),
+    // validateDto(ChatPageableDto, "query"),
+    chatController.listMessages
+  );
 
   return chatRouter;
 }
