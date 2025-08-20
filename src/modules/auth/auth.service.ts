@@ -1,5 +1,9 @@
 import { PrismaService } from "@/config/prisma";
-import { BadRequestException, NotFoundException } from "@/exceptions";
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from "@/exceptions";
 import { HashUtils } from "@/utilities/hash.utility";
 import { JwtUtils } from "@/utilities/jwt.utility";
 import { ILogin, IRegister } from "./auth.interface";
@@ -27,9 +31,9 @@ export class AuthService {
     const user = await this.db.user.findUnique({
       where: { email: data.email },
     });
-    if (user) throw new BadRequestException("User already exists");
+    if (user) throw new ConflictException("User already exists");
 
-    const newUser = await this.db.user.create({
+    await this.db.user.create({
       data: {
         firstname: data.firstname,
         lastname: data.lastname,
