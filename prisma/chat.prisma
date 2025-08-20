@@ -68,7 +68,7 @@ model Message {
 
   room           Room             @relation(fields: [roomId], references: [id])
   user           User             @relation(fields: [senderId], references: [id])
-  MessageReceipt MessageReceipt[]
+  messageReceipt MessageReceipt[]
 
   @@index([roomId, senderId])
   @@map("messages")
