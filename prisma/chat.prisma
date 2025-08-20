@@ -30,8 +30,8 @@ model Room {
   createdById String   @map("created_by_id")
 
   createdBy  User         @relation(fields: [createdById], references: [id])
-  RoomMember RoomMember[]
-  Message    Message[]
+  roomMember RoomMember[]
+  message    Message[]
 
   @@index([type, createdById])
   @@map("rooms")
