@@ -1,0 +1,19 @@
+model User {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  firstname String
+  lastname  String
+  email     String @unique
+  password  String
+
+  rooms          Room[]
+  messages       Message[]
+  RoomMember     RoomMember[]
+  MessageReceipt MessageReceipt[]
+  UserPresence   UserPresence[]
+
+  @@index([email])
+  @@map("users")
+}

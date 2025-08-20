@@ -1,0 +1,36 @@
+import { Server, Socket } from "socket.io";
+import { BaseSocketController } from "../../../utilities/base-socket";
+import { ChatService } from "../services/chat.service";
+
+export class ChatSocketController extends BaseSocketController {
+  private io: Server;
+
+  constructor(
+    io: Server,
+    socket: Socket,
+    private readonly chatService: ChatService
+  ) {
+    super(socket);
+    this.io = io;
+    this.registerEvents();
+  }
+
+  private registerEvents() {
+    this.on<{ roomId: string; text: string }>(
+      "chat:message",
+      async (payload) => {
+        const user = (this.socket as any).user;
+        if (!user) throw new Error("Unauthorized");
+
+        const message = await this.chatService.sendMessage(
+          user.sub,
+          payload.roomId,
+          { content: payload.text }
+        );
+
+        // emit to room
+        this.io.to(payload.roomId).emit("chat:message", message);
+      }
+    );
+  }
+}

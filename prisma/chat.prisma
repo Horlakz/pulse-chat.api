@@ -1,0 +1,105 @@
+enum RoomType {
+  PUBLIC  @map("public")
+  PRIVATE @map("private")
+}
+
+enum RoomMemberRole {
+  ADMIN  @map("admin")
+  MEMBER @map("member")
+}
+
+enum MessageMediaType {
+  IMAGE @map("image")
+  VIDEO @map("video")
+  AUDIO @map("audio")
+  TEXT  @map("text")
+}
+
+enum MessageReceiptStatus {
+  DELIVERED @map("delivered")
+  READ      @map("read")
+}
+
+model Room {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name        String
+  type        RoomType
+  createdById String   @map("created_by_id")
+
+  createdBy  User         @relation(fields: [createdById], references: [id])
+  RoomMember RoomMember[]
+  Message    Message[]
+
+  @@index([type, createdById])
+  @@map("rooms")
+}
+
+model RoomMember {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String         @map("user_id")
+  roomId String         @map("room_id")
+  role   RoomMemberRole @map("role")
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+  @@index([userId, roomId])
+  @@map("room_members")
+}
+
+model Message {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  content   String
+  media     String?
+  mediaType MessageMediaType?
+  edited    Boolean           @default(false)
+  deleted   Boolean           @default(false)
+  roomId    String            @map("room_id")
+  senderId  String            @map("sender_id")
+
+  room           Room             @relation(fields: [roomId], references: [id])
+  user           User             @relation(fields: [senderId], references: [id])
+  MessageReceipt MessageReceipt[]
+
+  @@index([roomId, senderId])
+  @@map("messages")
+}
+
+model MessageReceipt {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  messageId String               @map("message_id")
+  userId    String               @map("user_id")
+  status    MessageReceiptStatus @default(DELIVERED)
+
+  message Message @relation(fields: [messageId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@index([messageId, userId])
+  @@map("message_receipts")
+}
+
+model UserPresence {
+  id        String   @id @default(uuid(7))
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId     String   @map("user_id")
+  lastActive DateTime @map("last_active")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("user_presences")
+}
