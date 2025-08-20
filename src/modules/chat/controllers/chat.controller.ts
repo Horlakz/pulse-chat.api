@@ -25,4 +25,10 @@ export class ChatController {
     );
     res.json(BaseResponse.success(messages));
   };
+
+  getUserStatus = async (req: Request, res: Response) => {
+    const userId = req.user.sub as string;
+    const presence = await this.chatService.getUserPresence(userId);
+    res.json(BaseResponse.success(presence));
+  };
 }
