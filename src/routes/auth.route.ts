@@ -17,7 +17,7 @@ export default function initAuthRouter(db: PrismaService) {
 
   authRouter.post("/login", validateDto(LoginDto), authController.login);
   authRouter.post(
-    "/regsiter",
+    "/register",
     validateDto(RegisterDto),
     authController.register
   );
