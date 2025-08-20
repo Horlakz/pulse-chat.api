@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 
 import { BaseResponse } from "@/utilities/base-reponse";
-import { IChatPageable } from "../chat.interface";
 import { ChatService } from "../services/chat.service";
 
 export class ChatController {
@@ -17,7 +16,7 @@ export class ChatController {
   };
 
   listMessages = async (
-    req: Request<{ roomId: string }, {}, {}, IChatPageable>,
+    req: Request<{ roomId: string }, {}, {}, any>,
     res: Response
   ) => {
     const messages = await this.chatService.listMessages(

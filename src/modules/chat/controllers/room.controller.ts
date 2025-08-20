@@ -8,6 +8,7 @@ export class RoomController {
 
   createRoom = async (req: Request, res: Response) => {
     await this.roomService.create(req.user.sub, req.body);
+    res.json(BaseResponse.success(null));
   };
 
   myRooms = async (req: Request, res: Response) => {
@@ -21,7 +22,10 @@ export class RoomController {
   };
 
   listRoomMembers = async (req: Request<{ roomId: string }>, res: Response) => {
-    const members = await this.roomService.listMembers(req.params.roomId);
+    const members = await this.roomService.listMembers(
+      req.user.sub,
+      req.params.roomId
+    );
     res.json(BaseResponse.success(members));
   };
 

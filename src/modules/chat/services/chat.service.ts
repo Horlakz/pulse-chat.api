@@ -18,18 +18,26 @@ export class ChatService {
   }
 
   async listMessages(roomId: string, pageable: IChatPageable) {
+    const { page = 1, limit = 10 } = pageable;
     return this.db.message.findMany({
       where: { roomId },
       orderBy: { createdAt: "asc" },
-      skip: (pageable.page - 1) * pageable.limit,
-      take: pageable.limit,
+      skip: (page - 1) * limit,
+      take: limit,
       select: {
         id: true,
         content: true,
         media: true,
         mediaType: true,
         createdAt: true,
+        edited: true,
         user: { select: { id: true, firstname: true, lastname: true } },
+        messageReceipt: {
+          select: {
+            status: true,
+            user: { select: { firstname: true, lastname: true } },
+          },
+        },
       },
     });
   }

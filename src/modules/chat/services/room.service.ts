@@ -6,15 +6,19 @@ export class RoomService {
   constructor(private readonly db: PrismaService) {}
 
   async create(userId: string, data: IRoomCreate) {
-    await this.db.room.create({
+    const room = await this.db.room.create({
       data: { ...data, createdById: userId },
+    });
+
+    await this.db.roomMember.create({
+      data: { userId, roomId: room.id, role: "ADMIN" },
     });
   }
 
   async listMyRooms(userId: string) {
-    return this.db.room.findMany({
-      where: { createdById: userId },
-      select: { id: true, name: true, type: true },
+    return this.db.roomMember.findMany({
+      where: { userId },
+      select: { room: { select: { id: true, name: true, type: true } } },
     });
   }
 
@@ -25,10 +29,29 @@ export class RoomService {
     });
   }
 
-  async listMembers(roomId: string) {
+  async listMembers(userId: string, roomId: string) {
+    const room = await this.db.room.findUnique({
+      where: { id: roomId },
+    });
+
+    if (!room) {
+      throw new NotFoundException("Room not found");
+    }
+
+    const isMember = await this.db.roomMember.findFirst({
+      where: { userId, roomId },
+    });
+
+    if (!isMember) {
+      throw new BadRequestException("User is not a member of the room");
+    }
+
     return this.db.roomMember.findMany({
       where: { roomId },
-      select: { userId: true, role: true },
+      select: {
+        user: { select: { firstname: true, lastname: true } },
+        role: true,
+      },
     });
   }
 
@@ -60,11 +83,35 @@ export class RoomService {
     });
 
     if (!roomMember) {
-      throw new NotFoundException("Room member not found");
+      throw new NotFoundException("not a member of the room");
     }
 
     await this.db.roomMember.delete({
       where: { id: roomMember.id },
     });
+
+    if (roomMember.role === "ADMIN") {
+      const nextAdmin = await this.db.roomMember.findFirst({
+        where: { roomId, role: "MEMBER" },
+        orderBy: { createdAt: "asc" },
+      });
+
+      if (nextAdmin) {
+        await this.db.roomMember.update({
+          where: { id: nextAdmin.id },
+          data: { role: "ADMIN" },
+        });
+      }
+    }
+
+    const memberCount = await this.db.roomMember.count({
+      where: { roomId },
+    });
+
+    if (memberCount === 0) {
+      await this.db.room.delete({
+        where: { id: roomId },
+      });
+    }
   }
 }
