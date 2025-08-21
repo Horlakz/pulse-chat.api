@@ -103,7 +103,23 @@ A robust, real-time chat API built with Node.js, Express, TypeScript, and Socket
 
    ```bash
    cp .env.sample .env
-   # Configure your environment variables
+   nano .env
+   ```
+
+   Ensure you set the following variables in your `.env` file:
+
+   ```
+   DATABASE_URL="mysql://horlakz:password@localhost:3306/pulse_chat?schema=public"
+
+   PORT=8000
+
+   JWT_ACCESS_SECRET=630c88b7be60a1a64031d9e62c8a5137b3814287c3c05063e5a8911c1f5072e6
+   JWT_REFRESH_SECRET=688a701045ece1723187db91badb8060b8fdd097ed538bbe3cc985b92ca60953
+
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   REDIS_PASSWORD=
+
    ```
 
 4. **Database Setup**
