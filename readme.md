@@ -230,24 +230,42 @@ await chatService.markMessagesAsRead(userId, roomId);
 
 ## 🔌 WebSocket Events
 
+### Authorization
+
+Set the `authorization` header to `<token>` for all requests.
+
 ### Client → Server
 
-- `join_room` - Join a chat room
-- `leave_room` - Leave a chat room
-- `send_message` - Send a new message
-- `mark_read` - Mark messages as read
-- `typing_start` - Start typing indicator
-- `typing_stop` - Stop typing indicator
+- `chat:join` - Join a chat room
+
+  ```json
+  {
+    "roomId": "roomId"
+  }
+  ```
+
+- `chat:message` - Send a new message
+
+  ```json
+  {
+    "roomId": "roomId",
+    "content": "Hello, world!"
+  }
+  ```
+
+- `chat:typing` - Send typing indicator
+
+  ```json
+  {
+    "roomId": "roomId"
+  }
+  ```
 
 ### Server → Client
 
-- `message` - New message received
-- `message_delivered` - Message delivery confirmation
-- `message_read` - Message read confirmation
-- `user_joined` - User joined room
-- `user_left` - User left room
-- `user_typing` - User typing indicator
-- `presence_update` - User online/offline status
+- `chat:message` - New message received
+- `chat:user_joined` - User joined room
+- `chat:typing` - User typing indicator
 
 ## 🧪 Error Handling Examples
 
