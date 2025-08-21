@@ -230,6 +230,9 @@ await chatService.markMessagesAsRead(userId, roomId);
 
 ## 🔌 WebSocket Events
 
+### Connection
+connect at localhost:8000/ws and if you're using a socket.io client, set the path to /ws instead of /socket.io
+
 ### Authorization
 
 Set the `authorization` header to `<token>` for all requests.
