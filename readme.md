@@ -236,6 +236,8 @@ Set the `authorization` header to `<token>` for all requests.
 
 ### Client → Server
 
+- On Socket connection, all messages in groups are automatically set to `delivered`
+
 - `chat:join` - Join a chat room
 
   ```json
@@ -253,7 +255,7 @@ Set the `authorization` header to `<token>` for all requests.
   }
   ```
 
-- `chat:typing` - Send typing indicator
+- `chat:typing` - Send typing indicator and all messages that have been `delivered` and not `read` will be set to `read`
 
   ```json
   {
