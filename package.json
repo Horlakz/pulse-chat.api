@@ -43,7 +43,7 @@
     "socket.io": "^4.8.1"
   },
   "_moduleAliases": {
-    "@": "src"
+    "@": "dist"
   },
   "prisma": {
     "schema": "prisma"
